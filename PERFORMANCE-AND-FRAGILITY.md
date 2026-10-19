@@ -3,10 +3,10 @@
 Analysis of the `/ui` external-auth EnvoyFilter on `reasearch-tenant-gateway`.
 Covers two variants:
 
-- **Global** = `07-envoyfilter.yaml` (active): one Lua filter on the whole
-  gateway, path check (`/ui`) done inside Lua.
-- **LuaPerRoute** = `07-envoyfilter-luaperroute.yaml` (reference, not applied):
-  Lua scoped to only the `/ui` route via `LuaPerRoute`.
+- **Global** (active): one Lua filter on the whole gateway, path check (`/ui`)
+  done inside Lua.
+- **LuaPerRoute** (reference, not applied): Lua scoped to only the `/ui` route
+  via `LuaPerRoute`.
 
 ---
 
@@ -73,7 +73,7 @@ Each triggers a blocking `httpCall` to `research-auth-proxy` `/oauth2/auth`:
 
 ## 2. Eliminating non-`/ui` cost (LuaPerRoute)
 
-`07-envoyfilter-luaperroute.yaml` makes the Lua run **only** on the `/ui` route,
+The LuaPerRoute variant makes the Lua run **only** on the `/ui` route,
 so non-`/ui` traffic never enters Lua (no coroutine, no header fetch). How:
 install the script as a named `source_codes` entry with **no** default/inline
 code (global pass-through), then attach it to the `/ui` route via `LuaPerRoute`.
@@ -100,7 +100,7 @@ LuaPerRoute variant adds one more coupling on top.
   Renaming the service, moving its namespace, or changing its port breaks both.
   Normal, visible service coupling.
 
-### Where the global `07` is robust
+### Where the global variant is robust
 
 Targeting is **path-based and semantic**: `workloadSelector` on the stable
 gateway label + a `path == "/ui"` check in Lua. It does **not** depend on the
@@ -118,7 +118,7 @@ That identifier:
 - **changes** if you reorder rules, rename the route, or move namespaces;
 - **fails silently** (no error; per-route config just stops applying);
 - has a bad failure mode: `/ui` stops being gated, and because
-  `08-authpolicy-ui-bypass.yaml` already made the route anonymous to Kuadrant,
+  the route was already made anonymous to Kuadrant,
   `/ui` becomes **open** rather than 401.
 
 Re-derive the current route name any time:
@@ -128,7 +128,7 @@ POD=$(kubectl get pod -n openshift-ingress \
   -l gateway.networking.k8s.io/gateway-name=reasearch-tenant-gateway \
   -o name | head -1 | cut -d/ -f2)
 istioctl proxy-config route "$POD.openshift-ingress" -o json \
-  | python3 -c 'import json,sys;
+  | uv run python -c 'import json,sys;
 [print(vh["name"], r["name"], r.get("match"))
  for rc in json.load(sys.stdin) for vh in rc.get("virtualHosts",[])
  for r in vh.get("routes",[]) if "/ui" in str(r.get("match"))]'
@@ -136,7 +136,7 @@ istioctl proxy-config route "$POD.openshift-ingress" -o json \
 
 ### Summary table
 
-| Aspect | Global `07` (active) | LuaPerRoute `07` (reference) |
+| Aspect | Global (active) | LuaPerRoute (reference) |
 |---|---|---|
 | Envoy-internals / upgrade risk | yes | yes |
 | Service cluster-name coupling | yes | yes |

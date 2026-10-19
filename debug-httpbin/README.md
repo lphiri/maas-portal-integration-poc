@@ -14,7 +14,7 @@ Verified on 2026-10-13: browser and bearer requests returned 200 with Alice's
 expected groups, organization roles, and unchanged tokens. Anonymous requests redirected to login;
 invalid bearer tokens returned 401.
 
-From `maas-consumer-deploy/`:
+From the repository root:
 
 ```bash
 context=<your-context>

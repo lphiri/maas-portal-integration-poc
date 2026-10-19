@@ -12,7 +12,7 @@ upstream authentication errors remain unresolved.
 
 Failing URL:
 
-`https://maas.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com/maas-consumer-portal/maas/api/v1/models`
+`https://<public-host>/maas-consumer-portal/maas/api/v1/models`
 
 Request path:
 
@@ -28,20 +28,19 @@ Browser -> MaaS Gateway -> consumer portal -> maas-ui BFF
 - Issuer: Keycloak's `saas` realm in `grid-sso`; OIDC client: `tenant-demo`.
 
 The live BFF's `MAAS_API_URL` was set to
-`https://maas.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com/maas-api`.
+`https://<public-host>/maas-api`.
 The rollout succeeded, and `/api/v1/gateway-url` returned the configured URL.
 The BFF uses `--auth-method=user_token`,
 `--auth-token-header=x-forwarded-access-token`, and an empty token prefix.
 
 ## Keycloak claims
 
-Configuration source:
-`/home/lphiri/saws/keycloak/organizations/openshift`.
+The Keycloak configuration was external to this bundle.
 
 The `tenant-demo` groups and organization protocol mappers had
 `access.token.claim=false`. Their claims were available in ID tokens/UserInfo,
 but missing from the access token forwarded to MaaS. Both flags were changed
-to `true` in the live client and in `realms/saas-realm.json`.
+to `true` in the live client.
 
 A fresh Alice access token then contained:
 
@@ -68,12 +67,9 @@ The BFF forwarded the incoming request headers, then set its outbound
 `X-MaaS-Username` and `X-MaaS-Group` headers, alongside organization and role
 headers. The access token itself was unchanged.
 
-Relevant source under `/home/lphiri/code/shiftai/odh-dashboard`:
-
-- `packages/maas/bff/internal/api/models_handler.go`: passes `r.Header` to the
-  models repository.
-- `packages/maas/bff/internal/integrations/maas/maas_client.go`: copies every
-  supplied header with `request.Header.Add`, then sets the bearer token.
+The relevant BFF source passes the incoming request headers to the models
+repository. The MaaS client copies every supplied header and then sets the
+bearer token.
 
 The API Gateway's `maas-gateway-auth` AuthPolicy has a
 `deny-client-identity-headers` rule. Replaying the identity headers triggered
@@ -155,8 +151,7 @@ to login; an invalid bearer returned 401.
 Its files and resources are separate from the main bundle. Remove them with:
 
 ```bash
-context=openshift-ingress/api-ai-grid-tenant-ix3r-p3-openshiftapps-com:443/lphiri
-oc --context "$context" delete -k debug-httpbin
+oc --context "<your-context>" delete -k debug-httpbin
 ```
 
 The endpoint echoes credentials; do not share its full response. This report
@@ -196,4 +191,4 @@ proxy session cookie, and left `/oauth2/auth` returning 401. Tenant 2's callback
 configuration was verified; an authenticated Bob logout was not tested.
 
 The UI logout link should use browser navigation to:
-`https://maas.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com/oauth2/sign_out`.
+`https://<public-host>/oauth2/sign_out`.

@@ -80,14 +80,14 @@ command in the deployment steps renders and applies the same Kustomize bundle.
 
 ## AITenant OIDC settings
 
-Run `bash patch-aitenant-oidc.sh [AITenant-name]` from `maas-consumer-deploy/`.
+Run `bash patch-aitenant-oidc.sh [AITenant-name]` from the repository root.
 The command defaults to the `models-as-a-service` AITenant. It patches
 `spec.oidc.issuerUrl` and `spec.oidc.clientId` in the `ai-tenants` namespace
 with the values from `parameters.env`.
 
 ## Deploy
 
-Run these commands from `maas-consumer-deploy/`.
+Run these commands from the repository root.
 
 1. Edit the parameters.
 
@@ -138,7 +138,7 @@ The temporary header debug endpoint lives in `debug-httpbin/`. It is separate
 from the parent Kustomization and requires the deployed consumer bundle.
 Read the endpoint and token-warning details in `debug-httpbin/README.md`.
 
-Run these commands from `maas-consumer-deploy/`:
+Run these commands from the repository root:
 
 ```bash
 oc kustomize --load-restrictor LoadRestrictionsNone debug-httpbin |

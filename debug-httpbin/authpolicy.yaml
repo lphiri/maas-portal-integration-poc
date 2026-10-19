@@ -17,7 +17,7 @@ spec:
       direct-jwt:
         priority: 0
         jwt:
-          issuerUrl: https://keycloak-grid-sso.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com/realms/saas
+          issuerUrl: $(oidcIssuerUrl)
           ttl: 300
         credentials:
           authorizationHeader:
@@ -136,7 +136,7 @@ spec:
           - predicate: '!has(auth.identity.anonymous)'
         patternMatching:
           patterns:
-            - predicate: has(auth.identity.iss) && auth.identity.iss == 'https://keycloak-grid-sso.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com/realms/saas'
+            - predicate: has(auth.identity.iss) && auth.identity.iss == '__OIDC_ISSUER_URL__'
             - predicate: has(auth.identity.azp) && auth.identity.azp == 'tenant-demo'
     response:
       success:

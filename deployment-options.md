@@ -1,8 +1,8 @@
 # Deployment options for gateway-specific portal UI
 
-This document compares the three `kube-auth-proxy` integration options in
-`options.md`. The requirement is one Gateway per tenant, one tenant-specific UI
-appearance, and one shared backend UI BFF where possible.
+This document compares three `kube-auth-proxy` integration options. The
+requirement is one Gateway per tenant, one tenant-specific UI appearance, and
+one shared backend UI BFF where possible.
 
 The current APIs in this repository are Gateway API `HTTPRoute` and `Gateway`
 `v1`, Kuadrant `AuthPolicy` `v1`, and Istio `EnvoyFilter` `v1alpha3`.
@@ -40,7 +40,7 @@ BFF. The BFF must use both values for tenant isolation. Use a
 
 ## Option 1: Current Kuadrant and one auth proxy per Gateway
 
-This option is implemented in `deploy/base` and `deploy/overlays`.
+This option is implemented by the manifests in this repository.
 
 ### Gateway configuration
 
@@ -83,8 +83,7 @@ unless a tenant requires it.
 
 ## Option 2: `EnvoyFilter` without Kuadrant
 
-This option is represented by the prototype in
-`../consumer-ui-login-envoy-filter`.
+This option is not implemented in this repository.
 
 ### Gateway configuration
 
@@ -182,10 +181,9 @@ operational cost.
 
 ## Evidence
 
-- Current Gateway routes: `deploy/base/06-httproute.yaml`
-- Current auth proxy workload: `deploy/base/04-auth-proxy.yaml`
-- Current Kuadrant policy: `deploy/base/08-authpolicy-ui.yaml`
-- Current optional payload bypass: `deploy/overlays/research-payload-bypass/22-maas-api-payload-processing-bypass.yaml`
-- Current network policies: `deploy/base/19-admin-api-networkpolicy.yaml`
-- `EnvoyFilter` prototype: `../consumer-ui-login-envoy-filter/07-envoyfilter-luaperroute.yaml`
+- Current Gateway routes: `06-httproutes.yaml`
+- Current auth proxy workload: `04-auth-proxy.yaml`
+- Current Kuadrant policy: `08-authpolicies.yaml`
+- Current optional payload bypass: `22-payload-processing-bypass.yaml`
+- Current network policy: `15-auth-proxy-networkpolicy.yaml`
 - `EnvoyFilter` fragility analysis: `PERFORMANCE-AND-FRAGILITY.md`
