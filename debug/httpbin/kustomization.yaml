@@ -11,7 +11,7 @@ resources:
 configMapGenerator:
   - name: maas-debug-httpbin-parameters
     envs:
-      - ../parameters.env
+      - ../../deploy/maas-portal/parameters.env
 generatorOptions:
   disableNameSuffixHash: true
   labels:

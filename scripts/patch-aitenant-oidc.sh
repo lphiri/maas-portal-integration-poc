@@ -2,7 +2,7 @@
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "$0")" && pwd)
-. "$script_dir/parameters.env"
+. "$script_dir/../deploy/maas-portal/parameters.env"
 
 if [[ $# -gt 1 ]]; then
   printf 'Usage: %s [AITenant-name]\n' "$0" >&2

@@ -11,11 +11,11 @@ Run these commands from the repository root. Choose one Secret file type.
 ### Env file
 
 ```bash
-cp openshift/secret-template.env openshift/secrets.env
-chmod 600 openshift/secrets.env
+cp components/keycloak/secret-template.yaml components/keycloak/secrets.yaml
+chmod 600 components/keycloak/secrets.yaml
 ```
 
-Open `openshift/secrets.env` in a text editor. Replace each `REPLACE_WITH_...` value with the correct value. Put one `KEY=value` pair on each line. Do not add `export`. Do not run this file as a shell script. Git ignores this file.
+Open `components/keycloak/secrets.yaml` in a text editor. Replace each `REPLACE_WITH_...` value with the correct value.
 
 Set the test-user passwords in this file:
 
@@ -27,20 +27,20 @@ Set the test-user passwords in this file:
 ### YAML file
 
 ```bash
-cp openshift/secret-template.yaml openshift/secrets.yaml
-chmod 600 openshift/secrets.yaml
+cp components/keycloak/secret-template.yaml components/keycloak/secrets.yaml
+chmod 600 components/keycloak/secrets.yaml
 ```
 
-Open `openshift/secrets.yaml` and replace each `REPLACE_WITH_...` value. Use the same test-user password mapping as above. Git ignores this file too. The deploy script sets `KEYCLOAK_PUBLIC_URL` from the active cluster context.
+Open `components/keycloak/secrets.yaml` and replace each `REPLACE_WITH_...` value. Use the same test-user password mapping as above. Git ignores this file too. The deploy script sets `KEYCLOAK_PUBLIC_URL` from the active cluster context.
 
 ## Deploy
 
 After you prepare the Secret file, run one of these commands from the repository root:
 
 ```bash
-./openshift/deploy.sh
+./components/keycloak/deploy.sh
 # or
-./openshift/deploy.sh --env-file openshift/secrets.env
+./components/keycloak/deploy.sh --env-file components/keycloak/secrets.env
 ```
 
 The script prints the active cluster and user. It reads the apps domain and sets the Route host and `KEYCLOAK_PUBLIC_URL`. It applies the namespace and Secret. Then it applies the Kustomize bundle. If you use an env file, the script uses `oc` to create the Secret. It does not write a generated Secret manifest to disk. The script waits for PostgreSQL and Keycloak to finish their rollouts. Then it displays the Route.

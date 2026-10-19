@@ -142,7 +142,7 @@ recorded. At that stage, no session-refresh configuration had been changed.
 
 ## Debug endpoint
 
-The separate [debug-httpbin/](debug-httpbin/README.md) bundle was deployed at
+The separate [debug/httpbin/](../debug/httpbin/README.md) bundle was deployed at
 `/debug/headers` with OIDC protection. Browser and direct bearer tests confirmed
 unchanged tokens and the expected user, group, organization, and role headers.
 Proxy cookies were absent from the echoed request. Anonymous access redirected
@@ -151,7 +151,7 @@ to login; an invalid bearer returned 401.
 Its files and resources are separate from the main bundle. Remove them with:
 
 ```bash
-oc --context "<your-context>" delete -k debug-httpbin
+oc --context "<your-context>" delete -k debug/httpbin
 ```
 
 The endpoint echoes credentials; do not share its full response. This report

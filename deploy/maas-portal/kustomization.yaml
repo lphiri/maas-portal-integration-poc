@@ -1,0 +1,159 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - 03-auth-proxy-serviceaccount.yaml
+  - 04-auth-proxy.yaml
+  - 06-httproutes.yaml
+  - 08-authpolicies.yaml
+  - 15-auth-proxy-networkpolicy.yaml
+  - 22-payload-processing-bypass.yaml
+  - 23-backend-tls.yaml
+  - 24-token-rate-exemptions.yaml
+configMapGenerator:
+  - name: maas-consumer-deploy-parameters
+    envs:
+      - parameters.env
+  - name: maas-consumer-oidc-ca
+    files:
+      - oidc-ca.crt=oidc-ca.crt
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    app.kubernetes.io/part-of: maas-consumer-deploy
+patches:
+  - target:
+      kind: ConfigMap
+      name: maas-consumer-deploy-parameters
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: $(workloadNamespace)
+  - target:
+      kind: ConfigMap
+      name: maas-consumer-oidc-ca
+    patch: |-
+      - op: replace
+        path: /metadata/namespace
+        value: $(workloadNamespace)
+configurations:
+  - kustomizeconfig.yaml
+vars:
+  - name: workloadNamespace
+    objref: &parameter
+      kind: ConfigMap
+      name: maas-consumer-deploy-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.workloadNamespace
+  - name: gatewayNamespace
+    objref: *parameter
+    fieldref:
+      fieldpath: data.gatewayNamespace
+  - name: gatewayName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.gatewayName
+  - name: gatewayListenerName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.gatewayListenerName
+  - name: publicHostname
+    objref: *parameter
+    fieldref:
+      fieldpath: data.publicHostname
+  - name: portalServiceName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.portalServiceName
+  - name: oidcIssuerUrl
+    objref: *parameter
+    fieldref:
+      fieldpath: data.oidcIssuerUrl
+  - name: oidcClientId
+    objref: *parameter
+    fieldref:
+      fieldpath: data.oidcClientId
+  - name: authProxySecretName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.authProxySecretName
+  - name: authorinoNamespace
+    objref: *parameter
+    fieldref:
+      fieldpath: data.authorinoNamespace
+  - name: portalPathPrefix
+    objref: *parameter
+    fieldref:
+      fieldpath: data.portalPathPrefix
+  - name: portalRewritePrefix
+    objref: *parameter
+    fieldref:
+      fieldpath: data.portalRewritePrefix
+  - name: oauthPathPrefix
+    objref: *parameter
+    fieldref:
+      fieldpath: data.oauthPathPrefix
+  - name: portalRouteName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.portalRouteName
+  - name: oauthRouteName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.oauthRouteName
+  - name: authProxyName
+    objref: *parameter
+    fieldref:
+      fieldpath: data.authProxyName
+  - name: resourceNamePrefix
+    objref: *parameter
+    fieldref:
+      fieldpath: data.resourceNamePrefix
+  - name: partOfLabel
+    objref: *parameter
+    fieldref:
+      fieldpath: data.partOfLabel
+  - name: clusterDnsDomain
+    objref: *parameter
+    fieldref:
+      fieldpath: data.clusterDnsDomain
+  - name: cookieDomain
+    objref: *parameter
+    fieldref:
+      fieldpath: data.cookieDomain
+  - name: authProxyHttpPort
+    objref: *parameter
+    fieldref:
+      fieldpath: data.authProxyHttpPort
+  - name: sessionCheckTimeout
+    objref: *parameter
+    fieldref:
+      fieldpath: data.sessionCheckTimeout
+  - name: organizationClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.organizationClaim
+  - name: organizationIdPrimaryClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.organizationIdPrimaryClaim
+  - name: organizationIdFallbackClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.organizationIdFallbackClaim
+  - name: usernamePrimaryClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.usernamePrimaryClaim
+  - name: usernameFallbackClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.usernameFallbackClaim
+  - name: oidcGroupsClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.oidcGroupsClaim
+  - name: oidcEmailClaim
+    objref: *parameter
+    fieldref:
+      fieldpath: data.oidcEmailClaim

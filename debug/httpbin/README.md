@@ -18,17 +18,17 @@ From the repository root:
 
 ```bash
 context=<your-context>
-oc --context "$context" kustomize --load-restrictor LoadRestrictionsNone debug-httpbin |
+oc --context "$context" kustomize --load-restrictor LoadRestrictionsNone debug/httpbin |
   oc --context "$context" apply --server-side --dry-run=server --validate=strict -f -
-oc --context "$context" kustomize --load-restrictor LoadRestrictionsNone debug-httpbin |
+oc --context "$context" kustomize --load-restrictor LoadRestrictionsNone debug/httpbin |
   oc --context "$context" apply --server-side --field-manager=maas-debug-httpbin -f -
-namespace=$(grep '^workloadNamespace=' parameters.env | cut -d= -f2)
+namespace=$(grep '^workloadNamespace=' deploy/maas-portal/parameters.env | cut -d= -f2)
 oc --context "$context" -n "$namespace" rollout status deployment/maas-debug-httpbin
 ```
 
 Remove every debug resource, including the route-specific payload exemption:
 
 ```bash
-oc --context "$context" kustomize --load-restrictor LoadRestrictionsNone debug-httpbin |
+oc --context "$context" kustomize --load-restrictor LoadRestrictionsNone debug/httpbin |
   oc --context "$context" delete -f -
 ```

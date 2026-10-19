@@ -1,2 +1,3 @@
 /auth-proxy-secret.json
-/parameters.env
+/deploy/maas-portal/parameters.env
+/deploy/maas-portal/oidc-ca.crt

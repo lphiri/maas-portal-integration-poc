@@ -2,7 +2,7 @@
 set -euo pipefail
 
 script_dir=$(cd -- "$(dirname -- "$0")" && pwd)
-. "$script_dir/parameters.env"
+. "$script_dir/../deploy/maas-portal/parameters.env"
 
 if [[ $# != 1 ]]; then
   printf 'Usage: %s <output.json>\n' "$0" >&2

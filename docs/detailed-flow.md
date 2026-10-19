@@ -1,6 +1,6 @@
 # Detailed deployment communication flow
 
-This chart shows request paths and policy links. The dashed debug path comes from the optional `debug-httpbin` Kustomization.
+This chart shows request paths and policy links. The dashed debug path comes from the optional `debug/httpbin` Kustomization.
 
 ```mermaid
 flowchart LR
