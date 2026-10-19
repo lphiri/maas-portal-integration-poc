@@ -167,8 +167,8 @@ session still returned 401.
 
 ## Certificate handling
 
-The DestinationRule sets `insecureSkipVerify: true`. It does not use
-`service-ca.crt` and does not require a CA refresh.
+The DestinationRule sets `insecureSkipVerify: true`. It does not require a
+CA refresh.
 
 The auth proxy verifies the OIDC issuer with `oidc-ca.crt`. Refresh that file
 after the cluster ingress certificate changes, then apply the bundle again:
