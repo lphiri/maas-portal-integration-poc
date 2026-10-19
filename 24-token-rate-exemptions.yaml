@@ -1,0 +1,43 @@
+apiVersion: kuadrant.io/v1alpha1
+kind: TokenRateLimitPolicy
+metadata:
+  name: $(portalRouteName)-non-inference
+  namespace: $(workloadNamespace)
+  labels:
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: $(portalRouteName)
+  defaults:
+    strategy: atomic
+    limits:
+      non-inference:
+        rates:
+          - limit: 0
+            window: 1m
+        when:
+          - predicate: 'false'
+---
+apiVersion: kuadrant.io/v1alpha1
+kind: TokenRateLimitPolicy
+metadata:
+  name: $(oauthRouteName)-non-inference
+  namespace: $(workloadNamespace)
+  labels:
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: $(oauthRouteName)
+  defaults:
+    strategy: atomic
+    limits:
+      non-inference:
+        rates:
+          - limit: 0
+            window: 1m
+        when:
+          - predicate: 'false'

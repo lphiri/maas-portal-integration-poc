@@ -1,0 +1,70 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+  - route.yaml
+  - authpolicy.yaml
+  - networkpolicy.yaml
+  - payload-bypass.yaml
+  - token-rate-limit.yaml
+configMapGenerator:
+  - name: maas-debug-httpbin-parameters
+    envs:
+      - ../parameters.env
+generatorOptions:
+  disableNameSuffixHash: true
+  labels:
+    app.kubernetes.io/part-of: maas-debug-httpbin
+configurations:
+  - kustomizeconfig.yaml
+vars:
+  - name: workloadNamespace
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.workloadNamespace
+  - name: publicHostname
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.publicHostname
+  - name: gatewayNamespace
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.gatewayNamespace
+  - name: gatewayName
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.gatewayName
+  - name: gatewayListenerName
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.gatewayListenerName
+  - name: debugPublicPath
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.debugPublicPath
+  - name: debugBackendPath
+    objref:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.debugBackendPath

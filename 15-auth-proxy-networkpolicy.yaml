@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: $(authProxyName)-ingress
+  namespace: $(workloadNamespace)
+  labels:
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  podSelector:
+    matchLabels:
+      app: $(authProxyName)
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: $(authorinoNamespace)
+          podSelector:
+            matchLabels:
+              authorino-resource: authorino
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: $(gatewayNamespace)
+          podSelector:
+            matchLabels:
+              gateway.networking.k8s.io/gateway-name: $(gatewayName)
+      ports:
+        - protocol: TCP
+          port: 4180

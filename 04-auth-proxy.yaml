@@ -1,0 +1,126 @@
+# OIDC session service; Kuadrant forwards authenticated requests to the portal.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $(authProxyName)
+  namespace: $(workloadNamespace)
+  labels:
+    app: $(authProxyName)
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $(authProxyName)
+  template:
+    metadata:
+      labels:
+        app: $(authProxyName)
+    spec:
+      serviceAccountName: $(authProxyName)
+      containers:
+        - name: oauth-proxy
+          image: registry.redhat.io/rhoai/odh-kube-auth-proxy-rhel9@sha256:f64fb6e7750ef8cd42a7be4c56ca972158ec8855044bfd2c5d36f815bcf595d6
+          imagePullPolicy: IfNotPresent
+          args:
+            - --http-address=0.0.0.0:4180
+            - --metrics-address=0.0.0.0:9000
+            - --reverse-proxy=true
+            - --email-domain=*
+            - --upstream=static://200
+            - --skip-provider-button
+            - --pass-access-token=true
+            - --set-xauthrequest=true
+            - --provider=oidc
+            - --oidc-issuer-url=$(oidcIssuerUrl)
+            - --scope=openid email profile
+            - --oidc-email-claim=email
+            - --oidc-groups-claim=groups
+            - --use-system-trust-store=true
+            - --provider-ca-file=/etc/oauth2_proxy/oidc-ca/oidc-ca.crt
+            - --ssl-insecure-skip-verify=false
+            - --redirect-url=https://$(publicHostname)$(oauthPathPrefix)/callback
+            - --cookie-domain=$(cookieDomain)
+            - --cookie-name=_maas_consumer_proxy
+            - --cookie-expire=24h0m0s
+            - --cookie-refresh=4m0s
+            - --cookie-secure=true
+            - --cookie-httponly=true
+            - --cookie-samesite=lax
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: $(authProxySecretName)
+                  key: OAUTH2_PROXY_CLIENT_ID
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: $(authProxySecretName)
+                  key: OAUTH2_PROXY_CLIENT_SECRET
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: $(authProxySecretName)
+                  key: OAUTH2_PROXY_COOKIE_SECRET
+          ports:
+            - name: http
+              containerPort: 4180
+            - name: metrics
+              containerPort: 9000
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: oidc-ca
+              mountPath: /etc/oauth2_proxy/oidc-ca
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: oidc-ca
+          configMap:
+            name: maas-consumer-oidc-ca
+            items:
+              - key: oidc-ca.crt
+                path: oidc-ca.crt
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 10Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $(authProxyName)
+  namespace: $(workloadNamespace)
+  labels:
+    app: $(authProxyName)
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  selector:
+    app: $(authProxyName)
+  ports:
+    - name: http
+      port: 4180
+      targetPort: 4180
+    - name: metrics
+      port: 9000
+      targetPort: 9000

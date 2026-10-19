@@ -1,0 +1,15 @@
+varReference:
+  - path: metadata/namespace
+    kind: HTTPRoute
+  - path: spec/hostnames
+    kind: HTTPRoute
+  - path: spec/parentRefs/name
+    kind: HTTPRoute
+  - path: spec/parentRefs/namespace
+    kind: HTTPRoute
+  - path: spec/parentRefs/sectionName
+    kind: HTTPRoute
+  - path: spec/rules/matches/path/value
+    kind: HTTPRoute
+  - path: spec/rules/filters/urlRewrite/path/replaceFullPath
+    kind: HTTPRoute

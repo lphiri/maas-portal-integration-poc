@@ -1,0 +1,64 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: $(resourceNamePrefix)payload-processing-bypass
+  namespace: $(gatewayNamespace)
+  labels:
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  priority: 20
+  workloadSelector:
+    labels:
+      gateway.networking.k8s.io/gateway-name: $(gatewayName)
+  configPatches:
+    - applyTo: HTTP_ROUTE
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            route:
+              name: $(workloadNamespace).$(portalRouteName).0
+      patch:
+        operation: MERGE
+        value:
+          typed_per_filter_config:
+            envoy.filters.http.ext_proc.ipp-pre:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute
+              disabled: true
+            envoy.filters.http.ext_proc.ipp:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute
+              disabled: true
+    - applyTo: HTTP_ROUTE
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            route:
+              name: $(workloadNamespace).$(portalRouteName).1
+      patch:
+        operation: MERGE
+        value:
+          typed_per_filter_config:
+            envoy.filters.http.ext_proc.ipp-pre:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute
+              disabled: true
+            envoy.filters.http.ext_proc.ipp:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute
+              disabled: true
+    - applyTo: HTTP_ROUTE
+      match:
+        context: GATEWAY
+        routeConfiguration:
+          vhost:
+            route:
+              name: $(workloadNamespace).$(oauthRouteName).0
+      patch:
+        operation: MERGE
+        value:
+          typed_per_filter_config:
+            envoy.filters.http.ext_proc.ipp-pre:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute
+              disabled: true
+            envoy.filters.http.ext_proc.ipp:
+              '@type': type.googleapis.com/envoy.extensions.filters.http.ext_proc.v3.ExtProcPerRoute
+              disabled: true

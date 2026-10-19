@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1
+kind: DestinationRule
+metadata:
+  name: $(resourceNamePrefix)portal-backend-tls
+  namespace: $(gatewayNamespace)
+  labels:
+    app.kubernetes.io/part-of: $(partOfLabel)
+spec:
+  host: $(portalServiceName).$(workloadNamespace).svc.$(clusterDnsDomain)
+  trafficPolicy:
+    portLevelSettings:
+      - port:
+          number: 8443
+        tls:
+          mode: SIMPLE
+          insecureSkipVerify: true

@@ -1,0 +1,29 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  annotations:
+    argocd.argoproj.io/tracking-id: rhai-on-openshift:gateway.networking.k8s.io/Gateway:openshift-ingress/maas-default-gateway
+    opendatahub.io/managed: "false"
+    security.opendatahub.io/authorino-tls-bootstrap: "true"
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: rhai-on-openshift-chart-3.4.0
+    istio.io/rev: openshift-gateway
+  name: maas-default-gateway
+  namespace: openshift-ingress
+spec:
+  gatewayClassName: maas-gateway-class
+  listeners:
+    - allowedRoutes:
+        namespaces:
+          from: All
+      hostname: maas.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com
+      name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        certificateRefs:
+          - group: ""
+            kind: Secret
+            name: 2t8nbvqmttd9v70slpoe9ah2desqhvlh-primary-cert-bundle-secret
+        mode: Terminate

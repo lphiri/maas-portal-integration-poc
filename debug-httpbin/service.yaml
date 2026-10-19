@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: maas-debug-httpbin
+  namespace: redhat-ods-applications
+  labels:
+    app.kubernetes.io/part-of: maas-debug-httpbin
+spec:
+  selector:
+    app: maas-debug-httpbin
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

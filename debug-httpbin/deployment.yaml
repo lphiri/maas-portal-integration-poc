@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maas-debug-httpbin
+  namespace: redhat-ods-applications
+  labels:
+    app.kubernetes.io/part-of: maas-debug-httpbin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: maas-debug-httpbin
+  template:
+    metadata:
+      labels:
+        app: maas-debug-httpbin
+        app.kubernetes.io/part-of: maas-debug-httpbin
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: httpbin
+          image: ghcr.io/mccutchen/go-httpbin:2.25.0
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /status/200
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /status/200
+              port: http
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
