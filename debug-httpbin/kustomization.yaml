@@ -22,6 +22,19 @@ replacements:
   - source:
       kind: ConfigMap
       name: maas-debug-httpbin-parameters
+      fieldPath: data.oidcClientId
+    targets:
+      - select:
+          kind: AuthPolicy
+          name: maas-debug-httpbin-oidc
+        fieldPaths:
+          - spec.rules.authorization.client-bound.patternMatching.patterns.1.predicate
+        options:
+          delimiter: "'"
+          index: 1
+  - source:
+      kind: ConfigMap
+      name: maas-debug-httpbin-parameters
       fieldPath: data.oidcIssuerUrl
     targets:
       - select:

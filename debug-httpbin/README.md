@@ -2,7 +2,7 @@
 
 Open `https://<publicHostname><debugPublicPath>`.
 It uses the portal's existing Keycloak client and browser session, or a valid
-`tenant-demo` bearer token. The response echoes forwarded headers, including
+bearer token for the configured OIDC client. The response echoes forwarded headers, including
 the bearer token; keep it out of logs and shared screenshots. Cookies are removed
 before reaching httpbin, and responses use `Cache-Control: no-store`.
 

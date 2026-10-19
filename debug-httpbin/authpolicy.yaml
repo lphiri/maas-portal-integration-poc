@@ -137,7 +137,7 @@ spec:
         patternMatching:
           patterns:
             - predicate: has(auth.identity.iss) && auth.identity.iss == '__OIDC_ISSUER_URL__'
-            - predicate: has(auth.identity.azp) && auth.identity.azp == 'tenant-demo'
+            - predicate: has(auth.identity.azp) && auth.identity.azp == '__OIDC_CLIENT_ID__'
     response:
       success:
         headers:
