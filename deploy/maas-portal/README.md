@@ -75,6 +75,11 @@ Use `parameters.env.example` as the template. Copy it to `parameters.env`
 and edit the values for your cluster. Kustomize and the helper scripts read
 the same file.
 
+Before you apply the bundle, also update these local files:
+
+- `components/keycloak/secrets.yaml`, or `components/keycloak/secrets.env`, sets the Keycloak and PostgreSQL credentials.
+- `deploy/maas-portal/oidc-ca.crt` contains the public CA for the OIDC issuer.
+
 Run `oc kustomize deploy/maas-portal` to inspect the rendered objects. The
 `oc apply -k deploy/maas-portal` command in the deployment steps renders and
 applies the same Kustomize bundle.

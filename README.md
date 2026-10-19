@@ -1,6 +1,6 @@
 # MaaS portal integration
 
-This repository contains the Keycloak component and the MaaS portal deployment.
+This repository deploys the [Models as a Service](https://opendatahub-io.github.io/models-as-a-service) consumer portal behind an attached MaaS Tenant Gateway. The portal uses an OIDC login flow on its UI paths. Keycloak is a reusable component, and the portal deployment depends on it.
 
 ## Layout
 
@@ -9,6 +9,14 @@ This repository contains the Keycloak component and the MaaS portal deployment.
 - `docs/` contains the architecture and flow notes.
 - `scripts/` contains the helper scripts.
 - `debug/httpbin/` contains the temporary debug endpoint.
+
+## Before you apply
+
+Copy each example file, then replace its placeholder values:
+
+- `deploy/maas-portal/parameters.env` sets the cluster, Gateway, portal, OIDC, and debug values.
+- `components/keycloak/secrets.yaml` or `components/keycloak/secrets.env` sets the Keycloak and PostgreSQL credentials.
+- `deploy/maas-portal/oidc-ca.crt` stores the public CA for the OIDC issuer.
 
 ## Build
 
