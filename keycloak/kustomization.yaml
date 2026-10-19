@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: grid-sso
+resources:
+  - namespace.yaml
+  - postgresql.yaml
+  - keycloak.yaml
+  - route.yaml
+configMapGenerator:
+  - name: keycloak-realm-import
+    files:
+      - realms/saas-realm.json
+      - realms/grid-tenant-1-idp-realm.json
+      - realms/grid-tenant-2-idp-realm.json
