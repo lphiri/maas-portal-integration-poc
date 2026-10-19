@@ -1,6 +1,6 @@
 # Keycloak on OpenShift
 
-These files deploy Keycloak and PostgreSQL in the `grid-sso` namespace. They import the `saas`, `grid-tenant-1-idp`, and `grid-tenant-2-idp` realms. They do not deploy the FastAPI app. The `tenant-demo` client stays in `saas`. Its callback URI is `http://localhost:8000/callback`.
+These files deploy Keycloak and PostgreSQL in the `grid-sso` namespace. They import the `saas`, `grid-tenant-1-idp`, and `grid-tenant-2-idp` realms. They do not deploy the FastAPI app. The client ID, home URL, and callback URI come from `KEYCLOAK_CLIENT_ID`, `KEYCLOAK_HOME_URL`, and `KEYCLOAK_REDIRECT_URI` in `components/keycloak/secrets.env` or `components/keycloak/secrets.yaml`.
 
 ## Prepare the Secret file
 
@@ -10,19 +10,14 @@ Run these commands from the repository root. Choose one Secret file type.
 
 ### Env file
 
-```bash
-cp components/keycloak/secret-template.yaml components/keycloak/secrets.yaml
-chmod 600 components/keycloak/secrets.yaml
-```
-
-Open `components/keycloak/secrets.yaml` in a text editor. Replace each `REPLACE_WITH_...` value with the correct value.
+Create `components/keycloak/secrets.env` and set the keys listed in `components/keycloak/secret-template.yaml`.
 
 Set the test-user passwords in this file:
 
 - Set `GRID_TENANT_1_TEST_USER_PASSWORD` for `alice` in `grid-tenant-1-idp`.
 - Set `GRID_TENANT_2_TEST_USER_PASSWORD` for `bob` in `grid-tenant-2-idp`.
 
-`KEYCLOAK_CLIENT_ID`, `KEYCLOAK_HOME_URL`, and `KEYCLOAK_REDIRECT_URI` set the `tenant-demo` client in the `saas` realm. The template values match the current settings: `tenant-demo`, `http://localhost:8000`, and `http://localhost:8000/callback`. If your app uses other URLs, change the home URL and redirect URI.
+`KEYCLOAK_CLIENT_ID`, `KEYCLOAK_HOME_URL`, and `KEYCLOAK_REDIRECT_URI` configure the client in the `saas` realm. The deploy script reads these values from `components/keycloak/secrets.env` or `components/keycloak/secrets.yaml` and applies them automatically.
 
 ### YAML file
 
