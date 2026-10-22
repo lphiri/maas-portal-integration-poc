@@ -44,11 +44,12 @@ must already exist. Enable the authorization code flow and register this exact
 callback: `https://<publicHostname>/oauth2/callback`. Set `publicHostname` in
 `parameters.env`.
 
-The Secret's client ID must match the AuthPolicy's `azp` predicate. The proxy
-and Authorino must trust the issuer's HTTPS certificate. Configure the Keycloak
-client and realm outside this bundle. This bundle validates issuer TLS and uses
-the auth-proxy image digest currently deployed by the cluster's platform gateway.
-The `oidc-ca.crt` file contains the public CA for the issuer route.
+The Secret's client ID must match the AuthPolicy's `azp` predicate. The auth
+proxy and Authorino verify the issuer's HTTPS certificate separately. Configure
+the Keycloak client and realm outside this bundle. This bundle validates issuer
+TLS and uses the auth-proxy image digest currently deployed by the cluster's
+platform gateway. The `oidc-ca.crt` file configures the auth proxy only. See
+Certificate handling for the separate Authorino trust configuration.
 
 The portal BFF uses `--auth-method=user_token` with
 `--auth-token-header=x-forwarded-access-token`. It forwards the access token to
@@ -78,7 +79,8 @@ the same file.
 Before you apply the bundle, also update these local files:
 
 - `components/keycloak/secrets.yaml`, or `components/keycloak/secrets.env`, sets the Keycloak and PostgreSQL credentials.
-- `deploy/maas-portal/oidc-ca.crt` contains the public CA for the OIDC issuer.
+- `deploy/maas-portal/oidc-ca.crt` contains the ingress signer CA for the OIDC
+  issuer route.
 
 Run `oc kustomize deploy/maas-portal` to inspect the rendered objects. The
 `oc apply -k deploy/maas-portal` command in the deployment steps renders and
@@ -176,13 +178,52 @@ session still returned 401.
 The DestinationRule sets `insecureSkipVerify: true`. It does not require a
 CA refresh.
 
-The auth proxy verifies the OIDC issuer with `oidc-ca.crt`. Refresh that file
-after the cluster ingress certificate changes, then apply the bundle again:
+The auth proxy reads `oidc-ca.crt` from ConfigMap `maas-consumer-oidc-ca`. For
+the default OpenShift ingress certificate, fetch the signer CA from Secret
+`router-ca`. Do not use the route's leaf certificate from
+`router-certs-default`.
+Run this command from the repository root:
 
 ```bash
-oc get secret router-certs-default -n openshift-ingress \
-  -o jsonpath='{.data.tls\.crt}' | base64 -d > oidc-ca.crt
+oc -n openshift-ingress-operator get secret router-ca \
+  -o jsonpath='{.data.tls\.crt}' |
+  base64 -d > deploy/maas-portal/oidc-ca.crt
+oc apply --server-side --field-manager=maas-consumer-deploy -k deploy/maas-portal
 ```
+
+This bundle updates the auth proxy only. Authorino runs in `kuadrant-system` and
+reads `/etc/ssl/certs/openshift-service-ca/service-ca-bundle.crt` through
+`SSL_CERT_FILE`. Its bundle must contain both the OpenShift service CA and the
+ingress signer CA.
+
+Refresh the Authorino ConfigMap after you update `oidc-ca.crt`:
+
+```bash
+oc -n kuadrant-system get configmap openshift-service-ca.crt \
+  -o jsonpath='{.data.service-ca\.crt}' > /tmp/authorino-service-ca.crt
+cat /tmp/authorino-service-ca.crt deploy/maas-portal/oidc-ca.crt > /tmp/authorino-ca-bundle.crt
+oc create configmap authorino-oidc-ca-bundle -n kuadrant-system \
+  --from-file=service-ca-bundle.crt=/tmp/authorino-ca-bundle.crt \
+  --dry-run=client -o yaml | oc apply -f -
+```
+
+Add this volume to `Authorino/authorino.spec.volumes.items`:
+
+```yaml
+spec:
+  volumes:
+    defaultMode: 420
+    items:
+      - name: oidc-ca-bundle
+        mountPath: /etc/ssl/certs/openshift-service-ca
+        configMaps:
+          - authorino-oidc-ca-bundle
+        items:
+          - key: service-ca-bundle.crt
+            path: service-ca-bundle.crt
+```
+
+This mount is managed outside this bundle.
 
 API references: [AuthPolicy](https://docs.kuadrant.io/latest/kuadrant-operator/doc/reference/authpolicy/),
 [TokenRateLimitPolicy](https://docs.kuadrant.io/latest/kuadrant-operator/doc/reference/tokenratelimitpolicy/),

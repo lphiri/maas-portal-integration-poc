@@ -16,7 +16,9 @@ Copy each example file, then replace its placeholder values:
 
 - `deploy/maas-portal/parameters.env` sets the cluster, Gateway, portal, OIDC, and debug values.
 - `components/keycloak/secrets.yaml` or `components/keycloak/secrets.env` sets the Keycloak and PostgreSQL credentials.
-- `deploy/maas-portal/oidc-ca.crt` stores the public CA for the OIDC issuer.
+- `deploy/maas-portal/oidc-ca.crt` holds the ingress signer CA for the OIDC route.
+  The bundle mounts this CA in the auth proxy. Authorino trust uses a separate
+  config; see the deployment README.
 
 ## Build
 
