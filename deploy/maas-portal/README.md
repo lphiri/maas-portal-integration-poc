@@ -9,7 +9,7 @@ Set `publicHostname` and `portalPathPrefix` in `parameters.env`.
 The HTTPRoute sends portal requests to `redhat-ods-applications/maas-portal:8443`
 and removes the public prefix before forwarding. The DestinationRule in
 `openshift-ingress` enables TLS for `maas-portal:8443`.
-The portal's compiled `/maas-consumer-portal` path preserves assets and navigation.
+The portal's compiled `/maas-portal` path preserves assets and navigation.
 
 ## Resources
 

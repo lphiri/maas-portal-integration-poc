@@ -45,3 +45,9 @@ Render the debug endpoint:
 ```bash
 oc kustomize --load-restrictor LoadRestrictionsNone debug/httpbin
 ```
+
+Apply the standalone AITenant example:
+
+```bash
+oc apply -f components/keycloak/maas/ai-tenant.yaml
+```

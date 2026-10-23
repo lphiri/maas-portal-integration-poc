@@ -12,7 +12,7 @@ upstream authentication errors remain unresolved.
 
 Failing URL:
 
-`https://<public-host>/maas-consumer-portal/maas/api/v1/models`
+`https://<public-host>/maas-portal/maas/api/v1/models`
 
 Request path:
 
@@ -103,7 +103,7 @@ These headers are removed before requests reach the consumer backend.
 `Authorization` and `X-Forwarded-Access-Token` are preserved. The API Gateway
 verifies the forwarded token and derives its identity headers again.
 
-The change applies only to `/maas-consumer-portal`. Other backend routes retain
+The change applies only to `/maas-portal`. Other backend routes retain
 their behavior. The API AuthPolicy and BFF code were not changed. No additional
 EnvoyFilter was deployed for this fix; the proposed shared-listener filter was
 rejected by automatic approval review, declined by the user, and removed locally.

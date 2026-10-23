@@ -7,6 +7,9 @@ spec:
   gateway:
     name: maas-default-gateway
   oidc:
-    issuerUrl: https://keycloak-grid-sso.apps.rosa.ai-grid-tenant.ix3r.p3.openshiftapps.com/realms/saas
+    issuerUrl: https://keycloak.example.com/realms/saas
     clientId: tenant-demo
-
+    audience: maas-api
+    accessTokenPurposeClaim: token_use
+    accessTokenPurpose: access
+    ttl: 300

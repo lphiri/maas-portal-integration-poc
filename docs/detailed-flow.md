@@ -43,7 +43,7 @@ flowchart LR
   end
 
   browser <-->|HTTPS requests and responses| gateway
-  gateway <-->|"/maas-consumer-portal"| portal_service
+  gateway <-->|"/maas-portal"| portal_service
   gateway <-->|"/oauth2/*"| proxy_service
   gateway -.->|"/debug/headers (optional)"| debug_service
 

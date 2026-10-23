@@ -30,6 +30,29 @@
       "optionalClientScopes": ["organization"],
       "protocolMappers": [
         {
+          "name": "MaaS access token purpose",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-hardcoded-claim-mapper",
+          "config": {
+            "claim.name": "token_use",
+            "claim.value": "access",
+            "jsonType.label": "String",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
+          "name": "MaaS API audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+        "included.custom.audience": "maas-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        },
+        {
           "name": "MaaS tenant groups",
           "protocol": "openid-connect",
           "protocolMapper": "oidc-usermodel-attribute-mapper",

@@ -179,7 +179,7 @@ spec:
         headers:
           Location:
             expression: |
-              has(auth.authorization) && 'session-and-identity' in auth.authorization ? auth.authorization['session-and-identity'].login_location : '$(oauthPathPrefix)/start?rd=%2Fmaas-consumer-portal%2F'
+              has(auth.authorization) && 'session-and-identity' in auth.authorization ? auth.authorization['session-and-identity'].login_location : '$(oauthPathPrefix)/start?rd=%2Fmaas-portal%2F'
           Cache-Control:
             value: no-store
 ---
