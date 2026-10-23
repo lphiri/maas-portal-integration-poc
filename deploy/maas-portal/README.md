@@ -180,8 +180,9 @@ CA refresh.
 
 The auth proxy reads `oidc-ca.crt` from ConfigMap `maas-consumer-oidc-ca`. For
 the default OpenShift ingress certificate, fetch the signer CA from Secret
-`router-ca`. Do not use the route's leaf certificate from
+`router-ca`. Use this signer CA instead of the route certificate in
 `router-certs-default`.
+
 Run this command from the repository root:
 
 ```bash

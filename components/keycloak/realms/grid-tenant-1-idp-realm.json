@@ -84,6 +84,12 @@
           "[{\"tenant_id\":\"grid-tenant-1\",\"roles\":[\"admins\"]}]"
         ]
       },
+      "clientRoles": {
+        "realm-management": [
+          "manage-users",
+          "view-users"
+        ]
+      },
       "credentials": [
         {
           "type": "password",
